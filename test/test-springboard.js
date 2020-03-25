@@ -43,7 +43,16 @@ contract("Springboard", accounts => {
          
       // Write you code here....
       // 1) Upgrade wallet to V2
+      await walletV1.die();
+      const runtimeCodeV2 = WalletV2.deployedBytecode;
+      let txV2 = await springboard.execute(runtimeCodeV2);
+      let walletAddressV2 =  txV2.logs[0].args[0];
+      assert.equal(walletAddress, walletAddressV2, "address is changed");
+
       // 2) verify wallet version == 2.0 after upgrade
-      
+      const walletV2 = await WalletV2.at(walletAddressV2);
+      let versionV2 = await walletV2.version();
+      console.log(walletAddressV2, versionV2);
+      assert.equal(versionV2, "2.0", "version should be 2.0");
    });
 });
